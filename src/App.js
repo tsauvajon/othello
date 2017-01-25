@@ -1,99 +1,121 @@
-import React, { Component, ReactDOM } from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+// import logo from './logo.svg';
 import './App.css';
 
-class Board extends React.Component {
+class Board extends Component {
   renderSquare(i) {
-    return <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
+    return <Square key={'square'+i} value={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
+  }
+  renderRow(r) {
+    var row = [];
+    for (var i = 0; i < 8; i++) {
+      row.push(this.renderSquare(r*8+i));
+    }
+    return (
+       <div key={'row'+r}>
+        {row}
+       </div>
+    );
+  }
+  renderRows() {
+    var rows = [];
+    for (var i = 0; i < 8; i++) {
+      rows.push(this.renderRow(i));
+    }
+    return (
+      <div>
+        {rows}
+      </div>
+    );
   }
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {this.renderRows()}
       </div>
     );
   }
 }
 
-class Game extends React.Component {
+class Game extends Component {
   constructor() {
     super();
     this.state = {
-      history: [{
-        squares: Array(9).fill(null),
-      }],
+      squares: Array(64).fill(null),
       xIsNext: true,
       stepNumber: 0,
     };
   }
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-
-    if (calculateWinner(squares) || squares[i]) {
+    const squares = this.state.squares.slice();
+    if (this.state.stepNumber === 64 || squares[i])
       return;
-    }
+
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+    // this.convert(i, squares);
+
     this.setState({
-      history: history.concat([{
-        squares: squares
-      }]),
-      stepNumber: history.length,
+      squares: squares,
+      stepNumber: this.state.stepNumber+1,
       xIsNext: !this.state.xIsNext,
     });
   }
-  jumpTo(step) {
-    this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) ? false : true,
-    });
+  convert(i){
+    // const squares = this.state.squares.slice();
+    for (var x = -1; x < 2; x++){
+      for (var y = -1; y < 2; y++){
+        if (x !== 0 || y !== 0){
+          // squares = this.convertLine(i, x, y);, squares);
+          this.convertLine(i, x, y);
+        }
+      }
+    }
+    // return squares;
+  }
+  convertLine(i, xStep, yStep){//, squares){
+    const squares = this.state.squares.slice();
+    var found = false;
+    var curr = this.state.xIsNext ? 'X' : 'O';
+    var x = getX(i) + xStep, y = getY(i) + yStep;
+    while (!found && x >= 0 && x < 8 && y >= 0 && y < 8){
+      if (!squares[getId(x,y)]){
+        return;
+      }
+      else if (squares[getId(x,y)] === curr){
+        alert('found at  [' + xStep + ', ' + yStep + '] at [' + x +', ' + y + ']')
+        found = true;
+      }
+      else{
+        x += xStep;
+        y += yStep;
+      }
+    }
+    if(found){
+      x -= xStep;
+      y -= yStep;
+      while (x !== getX(i) && y !== getY(i)){
+          alert('converted for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
+          squares[getId(x, y)] = curr;
+          x -= xStep;
+          y -= yStep;
+      }
+    }
+    this.setState({ squares: squares });
   }
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const squares = this.state.squares;
 
     let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
-    } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-
-    const moves = history.map((step, move) => {
-      const desc = move ?
-            'move #' + move :
-            'Game start';
-      return (
-        <li key={move}>
-          <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
-        </li>
-      );
-    });
 
     return (
-      <div className="game">
-        <div className="game-board">
-          <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+      <div className="game" key='game'>
+        <div className="game-board" key='game-board'>
+          <Board squares={squares} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
         </div>
       </div>
     );
@@ -101,11 +123,6 @@ class Game extends React.Component {
 }
 
 // ========================================
-
-//ReactDOM.render(
-//  <Game />,
-//  document.getElementById('root')
-//);
 
 function Square(props) {
   return (
@@ -115,22 +132,20 @@ function Square(props) {
   );
 }
 
-function calculateWinner(squares) {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
+function getX(i){
+  return i%8;
 }
+
+function getY(i){
+  return parseInt(i/8);
+}
+
+// function getCoord(i){
+//   return { x: getX(i), y: getY(i)};
+// }
+
+function getId(x, y){
+  return y*8+x;
+}
+
+export default Game;
