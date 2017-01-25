@@ -53,7 +53,7 @@ class Game extends Component {
 
     squares[i] = this.state.xIsNext ? 'X' : 'O';
 
-    // this.convert(i, squares);
+    // this.wololo(i, squares);
 
     this.setState({
       squares: squares,
@@ -61,19 +61,19 @@ class Game extends Component {
       xIsNext: !this.state.xIsNext,
     });
   }
-  convert(i){
+  wololo(i){
     // const squares = this.state.squares.slice();
     for (var x = -1; x < 2; x++){
       for (var y = -1; y < 2; y++){
         if (x !== 0 || y !== 0){
-          // squares = this.convertLine(i, x, y);, squares);
-          this.convertLine(i, x, y);
+          // squares = this.wololoLine(i, x, y);, squares);
+          this.wololoLine(i, x, y);
         }
       }
     }
     // return squares;
   }
-  convertLine(i, xStep, yStep){//, squares){
+  wololoLine(i, xStep, yStep){//, squares){
     const squares = this.state.squares.slice();
     var found = false;
     var curr = this.state.xIsNext ? 'X' : 'O';
@@ -95,7 +95,7 @@ class Game extends Component {
       x -= xStep;
       y -= yStep;
       while (x !== getX(i) && y !== getY(i)){
-          alert('converted for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
+          alert('wololoed for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
           squares[getId(x, y)] = curr;
           x -= xStep;
           y -= yStep;
