@@ -3,7 +3,7 @@ React.js Othello app
 
 <h2>Getting started<h2>
 <pre>
-  <code class="console">
+  <code class="batch">
     npm install
     npm start
   </code>
