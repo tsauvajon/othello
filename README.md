@@ -2,5 +2,9 @@
 React.js Othello app
 
 <h2>Getting started<h2>
-npm install<br>
-npm start
+<pre>
+  <code class="console">
+    npm install
+    npm start
+  </code>
+</pre>
