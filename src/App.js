@@ -51,21 +51,18 @@ class Game extends Component {
   }
   handleClick(i) {
     const squares = this.state.squares.slice();
-    if (this.state.stepNumber === 60 || squares[i])
+    if (this.state.stepNumber >= 60 || squares[i])
       return;
 
     var toWololo = this.wololo(i);
-    // alert(toWololo);
-    if (toWololo.lenth === 0)
+    if (toWololo.length === 0)
       return;
     var current = this.state.xIsNext ? 'X' : 'O';
     toWololo.forEach(function(square){
-      console.log(square);
       squares[square] = current;
+      console.log(squares[square]);
     });
     squares[i] = current;
-
-    // this.wololo(i, squares);
 
     this.setState({
       squares: squares,
@@ -74,61 +71,64 @@ class Game extends Component {
     });
   }
   wololo(i){
-    // const squares = this.state.squares.slice();
     var toWololo = Array(0);
     for (var x = -1; x < 2; x++){
       for (var y = -1; y < 2; y++){
         if (x !== 0 || y !== 0){
-          // squares = this.wololoLine(i, x, y);, squares);
-          toWololo.push(this.wololoLine(i, x, y));
+          toWololo = toWololo.concat(this.wololoLine(i, x, y));
         }
       }
     }
     return toWololo;
-    // return squares;
   }
   wololoLine(i, xStep, yStep){//, squares){
     const squares = this.state.squares.slice();
-    var toWololo = Array(0);
+    var toWololo = [];
     var found = false;
     var curr = this.state.xIsNext ? 'X' : 'O';
     var x = getX(i) + xStep, y = getY(i) + yStep;
     while (!found && x >= 0 && x < 8 && y >= 0 && y < 8){
       if (!squares[getId(x,y)]){
-        // alert('returning empty array cause null')
-        return Array(0);
+        return [];
       }
       else if (squares[getId(x,y)] === curr){
-        alert('found at  [' + xStep + ', ' + yStep + '] at [' + x +', ' + y + ']')
         found = true;
       }
       else{
-        alert('adding square [' + x +', ' + y + ']');
         toWololo.push(getId(x,y));
         x += xStep;
         y += yStep;
       }
     }
-    if(found){
-      alert('returning array');
+    if(found)
       return toWololo;
-      // x -= xStep;
-      // y -= yStep;
-      // while (x !== getX(i) && y !== getY(i)){
-      //     alert('wololoed for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
-      //     squares[getId(x, y)] = curr;
-      //     x -= xStep;
-      //     y -= yStep;
-      // }
-    }
-      alert('returning empty array cause not found')
-      return Array(0);
-    // this.setState({ squares: squares });
+    return [];
+  }
+  passTurn(){
+    if (this.state.stepNumber > 59)
+      return;
+    this.setState({ xIsNext: !this.state.xIsNext });
+  }
+  giveUp(){
+    if (this.state.stepNumber > 59)
+      return;
+    const squares = this.state.squares.slice();
+    const current = this.state.xIsNext ? 'X' : 'O';
+    squares.forEach(function(square){
+      squares[square] = current;
+      console.log(squares[square]);
+    });
+    this.setState({ squares: squares, stepNumber: 60 });
   }
   render() {
     const squares = this.state.squares;
-
+    const score = calculateScore(this.state.squares);
+    const winner = calculateWinner(score);
+    const displayScore = 'X: ' + score.x + ' | O: ' + score.o;
     let status;
+    if (winner)
+      status = <h1>Winner : { winner }</h1>
+    else
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
@@ -137,7 +137,11 @@ class Game extends Component {
           <Board squares={squares} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
+          <div>{displayScore}</div>
           <div>{status}</div>
+          <div>{winner}</div>
+          <button onClick={() => this.passTurn()}>Pass</button>
+          <button onClick={() => this.giveUp()}>Give up</button>
         </div>
       </div>
     );
@@ -159,7 +163,7 @@ function getX(i){
 }
 
 function getY(i){
-  return parseInt(i/8);
+  return parseInt(i/8, 10);
 }
 
 // function getCoord(i){
@@ -168,6 +172,23 @@ function getY(i){
 
 function getId(x, y){
   return y*8+x;
+}
+
+function calculateWinner(score) {
+  if (score.o + score.x === 64)
+    return score.x > score.o ? 'X' : 'O';
+  return null
+}
+
+function calculateScore(squares){
+    var x = 0, o = 0;
+    squares.forEach(function(square){
+      if (square === 'X')
+        x++
+      else if (square === 'O')
+        o++;
+    });
+    return { x: x, o: o};
 }
 
 export default Game;
