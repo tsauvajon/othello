@@ -60,7 +60,6 @@ class Game extends Component {
     var current = this.state.xIsNext ? 'X' : 'O';
     toWololo.forEach(function(square){
       squares[square] = current;
-      console.log(squares[square]);
     });
     squares[i] = current;
 
@@ -114,10 +113,10 @@ class Game extends Component {
       return;
     const squares = this.state.squares.slice();
     const current = this.state.xIsNext ? 'X' : 'O';
-    squares.forEach(function(square){
-      squares[square] = current;
-      console.log(squares[square]);
-    });
+    for(let i = 0; i < 64; i++)
+      if (squares[i] === null)
+        squares[i] = current;
+    console.log(squares);
     this.setState({ squares: squares, stepNumber: 60 });
   }
   render() {
