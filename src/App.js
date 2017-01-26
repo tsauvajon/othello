@@ -40,18 +40,30 @@ class Board extends Component {
 class Game extends Component {
   constructor() {
     super();
+    const squares = Array(64).fill(null);
+    squares[27] = squares[36] = 'X';
+    squares[28] = squares[35] = 'O';
     this.state = {
-      squares: Array(64).fill(null),
+      squares: squares,
       xIsNext: true,
       stepNumber: 0,
     };
   }
   handleClick(i) {
     const squares = this.state.squares.slice();
-    if (this.state.stepNumber === 64 || squares[i])
+    if (this.state.stepNumber === 60 || squares[i])
       return;
 
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    var toWololo = this.wololo(i);
+    // alert(toWololo);
+    if (toWololo.lenth === 0)
+      return;
+    var current = this.state.xIsNext ? 'X' : 'O';
+    toWololo.forEach(function(square){
+      console.log(square);
+      squares[square] = current;
+    });
+    squares[i] = current;
 
     // this.wololo(i, squares);
 
@@ -63,45 +75,55 @@ class Game extends Component {
   }
   wololo(i){
     // const squares = this.state.squares.slice();
+    var toWololo = Array(0);
     for (var x = -1; x < 2; x++){
       for (var y = -1; y < 2; y++){
         if (x !== 0 || y !== 0){
           // squares = this.wololoLine(i, x, y);, squares);
-          this.wololoLine(i, x, y);
+          toWololo.push(this.wololoLine(i, x, y));
         }
       }
     }
+    return toWololo;
     // return squares;
   }
   wololoLine(i, xStep, yStep){//, squares){
     const squares = this.state.squares.slice();
+    var toWololo = Array(0);
     var found = false;
     var curr = this.state.xIsNext ? 'X' : 'O';
     var x = getX(i) + xStep, y = getY(i) + yStep;
     while (!found && x >= 0 && x < 8 && y >= 0 && y < 8){
       if (!squares[getId(x,y)]){
-        return;
+        // alert('returning empty array cause null')
+        return Array(0);
       }
       else if (squares[getId(x,y)] === curr){
         alert('found at  [' + xStep + ', ' + yStep + '] at [' + x +', ' + y + ']')
         found = true;
       }
       else{
+        alert('adding square [' + x +', ' + y + ']');
+        toWololo.push(getId(x,y));
         x += xStep;
         y += yStep;
       }
     }
     if(found){
-      x -= xStep;
-      y -= yStep;
-      while (x !== getX(i) && y !== getY(i)){
-          alert('wololoed for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
-          squares[getId(x, y)] = curr;
-          x -= xStep;
-          y -= yStep;
-      }
+      alert('returning array');
+      return toWololo;
+      // x -= xStep;
+      // y -= yStep;
+      // while (x !== getX(i) && y !== getY(i)){
+      //     alert('wololoed for [' + (-xStep) + ', ' + (-yStep) + '] at [' + x +', ' + y + ']')
+      //     squares[getId(x, y)] = curr;
+      //     x -= xStep;
+      //     y -= yStep;
+      // }
     }
-    this.setState({ squares: squares });
+      alert('returning empty array cause not found')
+      return Array(0);
+    // this.setState({ squares: squares });
   }
   render() {
     const squares = this.state.squares;
