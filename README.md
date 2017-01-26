@@ -2,9 +2,8 @@
 React.js Othello app
 
 <h2>Getting started<h2>
-<pre>
-  <code class="batch">
+
+### test
+```markdown
     npm install
     npm start
-  </code>
-</pre>
