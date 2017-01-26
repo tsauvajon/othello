@@ -1,8 +1,6 @@
-# Othello
-React.js othello app
+<h1>React Othello</h1>
+React.js Othello app
 
-# Getting started
-npm install -g create-react-app
-create-react-app othello
-cd othello
-npm serve
+<h2>Getting started<h2>
+npm install<br>
+npm start
