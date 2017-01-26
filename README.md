@@ -2,6 +2,9 @@
 React.js Othello app
 
 <h2>Getting started<h2>
-```markdown
-    # npm install
-    # npm start
+<pre class="highlight">
+    <code>
+        # npm install
+        # npm start
+    </code>
+    </pre>
