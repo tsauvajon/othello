@@ -112,10 +112,10 @@ class Game extends Component {
     if (this.state.stepNumber > 59)
       return;
     const squares = this.state.squares.slice();
-    const current = this.state.xIsNext ? 'X' : 'O';
+    const fillWith = this.state.xIsNext ? 'O' : 'X';
     for(let i = 0; i < 64; i++)
       if (squares[i] === null)
-        squares[i] = current;
+        squares[i] = fillWith;
     console.log(squares);
     this.setState({ squares: squares, stepNumber: 60 });
   }
@@ -138,7 +138,6 @@ class Game extends Component {
         <div className="game-info">
           <div>{displayScore}</div>
           <div>{status}</div>
-          <div>{winner}</div>
           <button onClick={() => this.passTurn()}>Pass</button>
           <button onClick={() => this.giveUp()}>Give up</button>
         </div>
