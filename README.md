@@ -1,8 +1,11 @@
-<h1>React Othello</h1>
+#React Othello
 React.js Othello app
 
-<h2>Getting started<h2>
+##Try it :
+Click [here](https://tsauvajon.github.io/othello)
+
+##Getting started
 <pre class="highlight">
 <code># npm install
-# npm start</code>
+ # npm start</code>
 </pre>
