@@ -5,7 +5,5 @@ React.js Othello app
 Click [here](https://tsauvajon.github.io/othello)
 
 ##Getting started
-<pre class="highlight">
-<code># npm install
- # npm start</code>
-</pre>
+```# npm install
+# npm start```
